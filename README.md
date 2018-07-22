@@ -1,1 +1,2 @@
-ngrok http 3000
+npm install
+npm run start && ngrok http 3000
