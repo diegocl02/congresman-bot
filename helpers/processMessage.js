@@ -49,7 +49,7 @@ const sendButtons = (senderId, text, buttonTexts) => {
   });
 };
 
-const sendImages = (senderId, attachment_id) => {
+const sendImage = (senderId, attachment_id) => {
   sendMessage({
     url: "https://graph.facebook.com/v2.6/me/messages",
     qs: { access_token: FACEBOOK_ACCESS_TOKEN },
@@ -127,7 +127,8 @@ module.exports = {
       sendTextMessage(senderId, 'Escribe tu opinión a continuacion:')
     } else if (postback == 'estadisticas') {
       // los url tienen que ser de facebook
-      sendImages(senderId, '2055690994745115');
+      sendImage(senderId, '2055690994745115');
+      sendImage(senderId, '2055692814744933');
     }
 
   }
