@@ -49,9 +49,16 @@ const sendButtons = (senderId, text, buttonTexts) => {
   });
 };
 
+const waitingForOptinions = new Set();
+
 module.exports = {
   processText(event) {
     const senderId = event.sender.id;
+    if (waitingForOptinions.has(senderId)) {
+      sendTextMessage(senderId, 'Gracias por tu opinión. Ésta estará disponible en la web y será enviada al congreso.');
+      waitingForOptinions.delete(senderId);
+      return;
+    }
     const message = event.message.text;
     const header = 'Actualmente se esta debatiendo el proyecto de ley "Ley que regula los hackathons". ¿Cómo deseas participar?';
     sendButtons(senderId, header, [
@@ -80,7 +87,8 @@ module.exports = {
     } else if (postback == 'contra') {
       sendTextMessage(senderId, 'Gracias por tu voto. El 60% de los votos también fueron en contra.');
     } else {
-      sendTextMessage(senderId, 'Escribe tu opinion a continuacion:')
+      waitingForOptinions.add(senderId);
+      sendTextMessage(senderId, 'Escribe tu opinión a continuacion:')
     }
 
   }
