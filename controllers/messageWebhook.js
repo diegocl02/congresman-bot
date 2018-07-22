@@ -5,6 +5,7 @@ module.exports = (req, res) => {
         req.body.entry.forEach(entry => {
             entry.messaging.forEach(event => {
                 if (event.message && event.message.text) {
+                    console.log('got: ' + event.message.text);
                     processMessage(event);
                 }
             });
