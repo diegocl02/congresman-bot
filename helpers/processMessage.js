@@ -49,6 +49,29 @@ const sendButtons = (senderId, text, buttonTexts) => {
   });
 };
 
+const sendImages = (senderId, attachment_id) => {
+  sendMessage({
+    url: "https://graph.facebook.com/v2.6/me/messages",
+    qs: { access_token: FACEBOOK_ACCESS_TOKEN },
+    method: "POST",
+    json: {
+      recipient: { id: senderId },
+      message: {
+        attachment: {
+          type: "template",
+          payload: {
+            template_type: "media",
+            elements: [{
+              media_type: "image",
+              attachment_id
+            }]
+          },
+        }
+      }
+    }
+  });
+};
+
 const waitingForOptinions = new Set();
 
 module.exports = {
@@ -64,31 +87,47 @@ module.exports = {
     sendButtons(senderId, header, [
       {
         "type":"postback",
-        "payload":"favor",
-        "title":"Vota a favor"
-      },
-      {
-        "type":"postback",
-        "payload":"contra",
-        "title":"Vota en contra"
+        "payload":"votar",
+        "title":"Votar"
       },
       {
         "type":"postback",
         "payload":"opinion",
         "title":"Danos tu opinión"
+      },
+      {
+        "type":"postback",
+        "payload":"estadisticas",
+        "title":"Ver estadisticas"
       }
     ]);
   },
   processPostback(event) {
     const senderId = event.sender.id;
     const postback = event.postback.payload;
-    if (postback == 'favor') {
+    if (postback == 'votar') {
+      sendButtons(senderId, 'Tu voto importa', [
+        {
+          "type":"postback",
+          "payload":"favor",
+          "title":"A favor"
+        },
+        {
+          "type":"postback",
+          "payload":"contra",
+          "title":"En contra"
+        }
+      ]);
+    } else if (postback == 'favor') {
       sendTextMessage(senderId, 'Gracias por tu voto. El 40% de los votos también fueron a favor.');
     } else if (postback == 'contra') {
       sendTextMessage(senderId, 'Gracias por tu voto. El 60% de los votos también fueron en contra.');
-    } else {
+    } else if (postback == 'opinion') {
       waitingForOptinions.add(senderId);
       sendTextMessage(senderId, 'Escribe tu opinión a continuacion:')
+    } else if (postback == 'estadisticas') {
+      // los url tienen que ser de facebook
+      sendImages(senderId, '2055690994745115');
     }
 
   }
