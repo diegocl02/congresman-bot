@@ -49,20 +49,10 @@ const sendButtons = (senderId, text, buttonTexts) => {
   });
 };
 
-module.exports = (event) => {
+module.exports = {
+  processText(event) {
     const senderId = event.sender.id;
     const message = event.message.text;
-    /*
-    const apiaiSession = apiAiClient.textRequest(message, { sessionId: "congres_bot" });
-    apiaiSession.on("response", (response) => {
-        const result = response.result.fulfillment.speech;
-        console.log('apiai got: ' + response.result.fulfillment.speech);
-        sendTextMessage(senderId, result);
-    });
-    apiaiSession.on("error", error => console.log(error));
-    apiaiSession.end();
-    */
-    // sendTextMessage(senderId, message + "2");
     const header = 'Actualmente se esta debatiendo el proyecto de ley "Ley que regula los hackathons". ¿Cómo deseas participar?';
     sendButtons(senderId, header, [
       {
@@ -78,7 +68,20 @@ module.exports = (event) => {
       {
         "type":"postback",
         "payload":"opinion",
-        "title":"Danos tu opinion"
+        "title":"Danos tu opinión"
       }
     ]);
+  },
+  processPostback(event) {
+    const senderId = event.sender.id;
+    const postback = event.postback.payload;
+    if (postback == 'favor') {
+      sendTextMessage(senderId, 'Gracias por tu voto. El 40% de los votos también fueron a favor.');
+    } else if (postback == 'contra') {
+      sendTextMessage(senderId, 'Gracias por tu voto. El 60% de los votos también fueron en contra.');
+    } else {
+      sendTextMessage(senderId, 'Escribe tu opinion a continuacion:')
+    }
+
+  }
 };

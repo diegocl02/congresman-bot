@@ -1,12 +1,17 @@
-const processMessage = require("../helpers/processMessage");
+const processor = require("../helpers/processMessage");
 module.exports = (req, res) => {
-    console.log("messageWebhook req", req, "messageWebhook rest", res)
+    console.log("messageWebhook req", req.body)
     if (req.body.object === "page") {
         req.body.entry.forEach(entry => {
+          console.log('entry', entry);
             entry.messaging.forEach(event => {
+                console.log('got event', event);
                 if (event.message && event.message.text) {
-                    console.log('got: ' + event.message.text);
-                    processMessage(event);
+                    console.log('got text: ', event.message.text);
+                    processor.processText(event);
+                } else if (event.postback) {
+                    console.log('got postback: ', event.postback);
+                    processor.processPostback(event);
                 }
             });
         });
